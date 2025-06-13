@@ -273,6 +273,19 @@
             clip: rect(0, 0, 0, 0);
             border: 0;
         }
+
+        /* Custom styles for fullscreen button */
+        #fullscreenButton {
+            background: transparent; /* Make transparent */
+            box-shadow: none; /* Remove shadow */
+            padding: 0.5rem; /* Adjust padding for better fit */
+            font-size: 1.8rem; /* Smaller icon size for the bottom bar */
+        }
+
+        #fullscreenButton:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.1); /* Subtle hover for transparent button */
+            transform: scale(1.1); /* Slightly enlarge on hover */
+        }
     </style>
 </head>
 <body>
@@ -320,6 +333,9 @@
                     <div class="progress-bar-handle" id="progressBarHandle"></div>
                 </div>
                 <span class="time-display" id="timeDisplay">00:00 / 00:00</span>
+                <button id="fullscreenButton" class="control-button" title="Toggle Fullscreen">
+                    <i class="bi bi-arrows-fullscreen"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -338,12 +354,13 @@
         const timeDisplay = document.getElementById('timeDisplay');
         const backButton = document.getElementById('backButton');
         const videoPlayerWrapper = document.getElementById('videoPlayerWrapper');
+        const fullscreenButton = document.getElementById('fullscreenButton');
+        const fullscreenIcon = fullscreenButton.querySelector('i');
 
         let isDraggingProgressBar = false;
         let controlsTimeout;
         const FADE_TIMEOUT_SECONDS = 7;
         let lastTapTime = 0;
-        let lastTapX = 0;
         const DOUBLE_TAP_THRESHOLD_MS = 300;
         const SEEK_TIME = 10;
 
@@ -388,7 +405,6 @@
             if (moviePlayer.paused || moviePlayer.ended || moviePlayer.currentTime === 0) {
                 showControls();
             }
-             // Initial check for loading state if video is already loading when metadata is loaded
             if (moviePlayer.readyState < 3) { // HTMLMediaElement.HAVE_FUTURE_DATA
                 playPauseIcon.style.display = 'none';
                 loadingSpinner.style.display = 'block';
@@ -413,52 +429,51 @@
             } else {
                 moviePlayer.pause();
             }
-            showControls();
+            showControls(); // Ensure controls stay visible or timer resets
         });
 
         rewindButton.addEventListener('click', () => {
             if (!rewindButton.disabled) {
                 moviePlayer.currentTime = Math.max(0, moviePlayer.currentTime - SEEK_TIME);
-                showControls();
+                showControls(); // Ensure controls stay visible or timer resets
             }
         });
 
         forwardButton.addEventListener('click', () => {
             if (!forwardButton.disabled) {
                 moviePlayer.currentTime = Math.min(moviePlayer.duration, moviePlayer.currentTime + SEEK_TIME);
-                showControls();
+                showControls(); // Ensure controls stay visible or timer resets
             }
         });
 
         // --- Loading/Buffering Logic ---
         moviePlayer.addEventListener('waiting', () => {
-            playPauseIcon.style.display = 'none'; // Hide the icon
-            loadingSpinner.style.display = 'block'; // Show the spinner
+            playPauseIcon.style.display = 'none';
+            loadingSpinner.style.display = 'block';
             playPauseButton.disabled = true;
-            rewindButton.disabled = true; // Disable rewind button
-            forwardButton.disabled = true; // Disable forward button
+            rewindButton.disabled = true;
+            forwardButton.disabled = true;
             showControls();
         });
 
         moviePlayer.addEventListener('playing', () => {
-            loadingSpinner.style.display = 'none'; // Hide the spinner
-            playPauseIcon.style.display = 'block'; // Show the icon
+            loadingSpinner.style.display = 'none';
+            playPauseIcon.style.display = 'block';
             playPauseButton.disabled = false;
-            rewindButton.disabled = false; // Enable rewind button
-            forwardButton.disabled = false; // Enable forward button
+            rewindButton.disabled = false;
+            forwardButton.disabled = false;
             playPauseIcon.classList.remove('bi-play-fill');
             playPauseIcon.classList.add('bi-pause-fill');
             showControls();
         });
 
         moviePlayer.addEventListener('canplay', () => {
-            // Ensure spinner is hidden and icon is shown if it was buffering and can now play.
             if (loadingSpinner.style.display === 'block') {
                 loadingSpinner.style.display = 'none';
                 playPauseIcon.style.display = 'block';
                 playPauseButton.disabled = false;
-                rewindButton.disabled = false; // Enable rewind button
-                forwardButton.disabled = false; // Enable forward button
+                rewindButton.disabled = false;
+                forwardButton.disabled = false;
             }
             updateProgressBar();
         });
@@ -466,27 +481,24 @@
         moviePlayer.addEventListener('play', () => {
             playPauseIcon.classList.remove('bi-play-fill');
             playPauseIcon.classList.add('bi-pause-fill');
-            loadingSpinner.style.display = 'none'; // Ensure spinner is hidden on play
-            playPauseIcon.style.display = 'block'; // Ensure icon is shown on play
+            loadingSpinner.style.display = 'none';
+            playPauseIcon.style.display = 'block';
             showControls();
-
-            // Removed fullscreen request logic as video already takes full screen
-            // Removed screen orientation lock as it's typically paired with fullscreen
         });
 
         moviePlayer.addEventListener('pause', () => {
             playPauseIcon.classList.remove('bi-pause-fill');
             playPauseIcon.classList.add('bi-play-fill');
-            loadingSpinner.style.display = 'none'; // Ensure spinner is hidden on pause
-            playPauseIcon.style.display = 'block'; // Ensure icon is shown on pause
+            loadingSpinner.style.display = 'none';
+            playPauseIcon.style.display = 'block';
             showControls();
         });
 
         moviePlayer.addEventListener('ended', () => {
             playPauseIcon.classList.remove('bi-pause-fill');
             playPauseIcon.classList.add('bi-play-fill');
-            loadingSpinner.style.display = 'none'; // Ensure spinner is hidden on ended
-            playPauseIcon.style.display = 'block'; // Ensure icon is shown on ended
+            loadingSpinner.style.display = 'none';
+            playPauseIcon.style.display = 'block';
             showControls();
             const movieKey = `movie_progress_${'{{ movie_title }}'.trim().replace(/\s+/g, '_').toLowerCase()}`;
             localStorage.removeItem(movieKey);
@@ -506,7 +518,6 @@
         moviePlayer.addEventListener('loadedmetadata', updateProgressBar);
 
         progressBarContainer.addEventListener('mousedown', (e) => {
-            // Only allow seeking if the video is ready enough (HAVE_CURRENT_DATA or more)
             if (moviePlayer.readyState >= 2) { 
                 isDraggingProgressBar = true;
                 progressBarContainer.classList.add('dragging');
@@ -516,7 +527,6 @@
         });
 
         progressBarContainer.addEventListener('touchstart', (e) => {
-            // Only allow seeking if the video is ready enough (HAVE_CURRENT_DATA or more)
             if (moviePlayer.readyState >= 2) {
                 isDraggingProgressBar = true;
                 progressBarContainer.classList.add('dragging');
@@ -562,7 +572,6 @@
             if (!isNaN(moviePlayer.duration)) {
                 moviePlayer.currentTime = moviePlayer.duration * percent;
             }
-            // Update time display and handle position instantly while dragging
             updateProgressBar();
         }
 
@@ -570,8 +579,66 @@
             window.history.back();
         });
 
-        videoPlayerWrapper.addEventListener('touchend', (event) => {
+        // --- Fullscreen Logic ---
+        fullscreenButton.addEventListener('click', () => {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                if (videoPlayerWrapper.requestFullscreen) {
+                    videoPlayerWrapper.requestFullscreen();
+                } else if (videoPlayerWrapper.webkitRequestFullscreen) { /* Safari */
+                    videoPlayerWrapper.webkitRequestFullscreen();
+                } else if (videoPlayerWrapper.msRequestFullscreen) { /* IE11 */
+                    videoPlayerWrapper.msRequestFullscreen();
+                }
+            }
+            showControls();
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+                fullscreenIcon.classList.remove('bi-arrows-fullscreen');
+                fullscreenIcon.classList.add('bi-arrows-angle-contract');
+                if (!moviePlayer.paused) {
+                    hideControls();
+                }
+            } else {
+                fullscreenIcon.classList.remove('bi-arrows-angle-contract');
+                fullscreenIcon.classList.add('bi-arrows-fullscreen');
+                showControls();
+            }
+        });
+
+        document.addEventListener('webkitfullscreenchange', () => { // For Safari
+            if (document.webkitFullscreenElement) {
+                fullscreenIcon.classList.remove('bi-arrows-fullscreen');
+                fullscreenIcon.classList.add('bi-arrows-angle-contract');
+                if (!moviePlayer.paused) {
+                    hideControls();
+                }
+            } else {
+                fullscreenIcon.classList.remove('bi-arrows-angle-contract');
+                fullscreenIcon.classList.add('bi-arrows-fullscreen');
+                showControls();
+            }
+        });
+
+        // --- Mobile Tap Functionality Refined ---
+        document.addEventListener('touchend', (event) => {
+            const clickedOnControl = event.target.closest('.control-button') || 
+                                     event.target.closest('.top-button') || 
+                                     event.target.closest('.progress-bar-container') || 
+                                     event.target.closest('.movie-title-display');
+
+            if (clickedOnControl) {
+                // If a control was tapped, prevent the main video wrapper tap logic from executing.
+                // The individual control's click handler will handle showing/hiding controls.
+                return;
+            }
+
+            // Now, handle taps that are NOT on a control (i.e., taps on the video itself)
             if (moviePlayer.paused || moviePlayer.ended || moviePlayer.readyState < 2) {
+                // If video is paused/ended/buffering, a single tap toggles controls
                 const currentTime = new Date().getTime();
                 if (currentTime - lastTapTime > DOUBLE_TAP_THRESHOLD_MS) {
                     toggleControls();
@@ -580,21 +647,10 @@
                 return;
             }
 
+            // Logic for double-tap seeking on playing video
             const currentTime = new Date().getTime();
             const tapX = event.changedTouches[0].clientX;
-            const tapY = event.changedTouches[0].clientY;
-
-            const controlsRect = customControlsOverlay.getBoundingClientRect();
-            // Check if the tap occurred within the visible controls area
-            if (
-                customControlsOverlay.classList.contains('visible') &&
-                tapX >= controlsRect.left && tapX <= controlsRect.right &&
-                tapY >= controlsRect.top && tapY <= controlsRect.bottom &&
-                (event.target.closest('.control-button') || event.target.closest('.top-button') || event.target.closest('.progress-bar-container') || event.target.closest('.movie-title-display'))
-            ) {
-                // If a control was tapped while controls are visible, don't trigger double-tap seek or control toggle
-                return;
-            }
+            const tapY = event.changedTouches[0].clientY; // Not used for seeking, but good to keep if needed later
 
             if (currentTime - lastTapTime < DOUBLE_TAP_THRESHOLD_MS) {
                 const videoWidth = videoPlayerWrapper.offsetWidth;
@@ -604,12 +660,40 @@
                     moviePlayer.currentTime = Math.min(moviePlayer.duration, moviePlayer.currentTime + SEEK_TIME);
                 }
                 lastTapTime = 0; // Reset lastTapTime after double tap
-                showControls();
+                showControls(); // Show controls after seeking
             } else {
+                // Single tap on video area to toggle controls
                 lastTapTime = currentTime;
-                lastTapX = tapX;
-                // If it's a single tap, toggle controls
                 toggleControls();
+            }
+        });
+
+        // --- Keyboard Functionality ---
+        document.addEventListener('keydown', (event) => {
+            const isInputFocused = document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA');
+
+            if (isInputFocused) {
+                return; // Do not interfere with typing in input fields
+            }
+
+            switch (event.key) {
+                case ' ': // Spacebar
+                    event.preventDefault(); // Prevent page scrolling
+                    playPauseButton.click();
+                    break;
+                case 'ArrowLeft': // Left Arrow key
+                    event.preventDefault();
+                    rewindButton.click();
+                    break;
+                case 'ArrowRight': // Right Arrow key
+                    event.preventDefault();
+                    forwardButton.click();
+                    break;
+                case 'f':
+                case 'F': // 'f' or 'F' key for fullscreen
+                    event.preventDefault();
+                    fullscreenButton.click();
+                    break;
             }
         });
 
@@ -617,7 +701,6 @@
 
         moviePlayer.addEventListener('loadeddata', () => {
             const savedTime = localStorage.getItem(movieKey);
-            // Only seek if savedTime is valid and less than duration
             if (savedTime && moviePlayer.duration > 0 && parseFloat(savedTime) > 0 && parseFloat(savedTime) < moviePlayer.duration) {
                 moviePlayer.currentTime = parseFloat(savedTime);
                 console.log(`Resuming ${'{{ movie_title }}'.trim()} at ${formatTime(parseFloat(savedTime))}.`);
@@ -645,26 +728,21 @@
             }
         });
 
-        // Initialize controls visibility on page load
-        // This ensures controls are visible when the page loads, especially if autoplay is blocked
         document.addEventListener('DOMContentLoaded', () => {
             showControls();
         });
 
-        // Handle cases where autoplay might be blocked
         moviePlayer.addEventListener('play', () => {
-            // When play event fires, ensure controls are shown and then set timeout to hide them
             showControls();
         });
 
         moviePlayer.addEventListener('canplaythrough', () => {
-            // If the video can play through, ensure loading spinner is hidden
             if (loadingSpinner.style.display === 'block') {
                 loadingSpinner.style.display = 'none';
                 playPauseIcon.style.display = 'block';
                 playPauseButton.disabled = false;
-                rewindButton.disabled = false; // Enable rewind button
-                forwardButton.disabled = false; // Enable forward button
+                rewindButton.disabled = false;
+                forwardButton.disabled = false;
             }
         });
     </script>
