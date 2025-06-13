@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <link rel="manifest" href="/manifest.json">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Thirai">
+
+<link rel="apple-touch-icon" href="/static/ios/icon-192x192.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/static/ios/icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/static/ios/icon-180x180.png">
+<link rel="apple-touch-icon" sizes="167x167" href="/static/ios/icon-167x167.png">
+
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" href="/static/splash/launch-750x1334.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1242x2208.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1125x2436.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" href="/static/splash/launch-828x1792.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1242x2688.png">
+<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1080x2340.png">
+<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1170x2532.png">
+<link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1284x2778.png">
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ThiraiGUI</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <style>
+        body {
+            transition: background-color 0.5s ease, color 0.5s ease;
+            /* Changed from p-8 on body tag to padding here */
+            padding-top: 3rem; /* Adjust this value to move content further down */
+            padding-left: 2rem;
+            padding-right: 2rem;
+            padding-bottom: 2rem;
+        }
+        /* Dark mode overrides - matched to your Bootstrap theme */
+        body.dark-mode {
+            background-color: #121212; /* Very dark background from your Bootstrap theme */
+            color: #e0e0e0; /* Light text for dark mode from your Bootstrap theme */
+        }
+
+        /* Light mode language links */
+        .lang-link {
+            background-color: white;
+            color: #212529; /* dark text */
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Added shadow for consistency with movie cards */
+        }
+        .lang-link:hover {
+            background-color: #333; /* dark hover background */
+            color: white;
+            transform: translateY(-2px); /* Slight lift on hover */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* Enhanced shadow on hover */
+        }
+        /* Dark mode language links - matched to your Bootstrap theme card styles */
+        body.dark-mode .lang-link {
+            background-color: #1e1e1e; /* Slightly lighter dark for cards from your Bootstrap theme */
+            color: #e0e0e0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .lang-link:hover {
+            background-color: #343a40; /* Similar to card hover in Bootstrap theme */
+            color: white;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        /* Dark mode error text - matched to your Bootstrap theme alert */
+        body.dark-mode .error-text {
+            color: #ffc107; /* Warning yellow for text, stands out more than red */
+        }
+
+        /* Dark mode H1 text - matched to your Bootstrap theme */
+        body.dark-mode h1 {
+            color: #ffffff; /* White heading text */
+        }
+
+        /* Toggle button */
+        #toggleDarkMode {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background-color: #333; /* dark background */
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+            width: 2.5rem;
+            height: 2.5rem;
+            z-index: 1000;
+        }
+        #toggleDarkMode:hover {
+            background-color: #555;
+        }
+        /* Icon size */
+        #modeIcon {
+            font-size: 1.25rem;
+        }
+
+        /* Styles for the search bar from the first HTML, adapted for Tailwind CSS context */
+        .search-box {
+            max-width: 500px;
+            margin: 0 auto 30px;
+        }
+
+        .input-group {
+            display: flex; /* Essential for alignment */
+            align-items: stretch; /* Stretches children to fill height */
+            gap: 0.5rem; /* Space between elements, replaces individual ml-2 */
+        }
+
+        .form-control-lg, .form-select-lg { /* Apply consistent styling to both input and select */
+            padding: 0.75rem 1.25rem;
+            font-size: 1.25rem;
+            border-radius: 0.375rem; /* Matches Tailwind's rounded-md */
+            border: 1px solid #ced4da;
+            flex-grow: 1; /* Allows input to take up available space */
+        }
+
+        .btn-primary {
+            background-color: #0d6efd; /* Bootstrap primary blue */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            font-size: 1.25rem;
+            border-radius: 0.375rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.15s ease-in-out;
+            white-space: nowrap; /* Prevents text wrap on button */
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+        }
+
+        /* Dark mode adjustments for search bar elements */
+        body.dark-mode .form-control-lg,
+        body.dark-mode .form-select-lg {
+            background-color: #333;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+        body.dark-mode .form-control-lg::placeholder {
+            color: #aaa;
+        }
+        body.dark-mode .btn-primary {
+            background-color: #0d6efd; /* Keep primary blue in dark mode */
+        }
+        body.dark-mode .btn-primary:hover {
+            background-color: #0b5ed7;
+        }
+
+        /* Select element styling */
+        .form-select-lg {
+            appearance: none; /* Removes default arrow */
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px 12px;
+            /* Explicit width for the select to control its size better, adjust as needed */
+            width: 150px; /* Example fixed width, adjust to your preference */
+            flex-shrink: 0; /* Prevents it from shrinking too much */
+        }
+
+        body.dark-mode .form-select-lg {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23e0e0e0' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"); /* Lighter arrow for dark mode */
+        }
+
+        /* --- Responsive Adjustments for Phones --- */
+
+        /* Stack search bar elements vertically on small screens */
+        @media (max-width: 767px) { /* Tailwind's 'md' breakpoint is 768px, so we target screens smaller than that */
+            .input-group {
+                flex-direction: column; /* Stack items vertically */
+                gap: 1rem; /* Increase gap for stacked items */
+            }
+
+            .form-control-lg, .form-select-lg, .btn-primary {
+                width: 100%; /* Make them take full width */
+                font-size: 1rem; /* Slightly smaller font for compactness */
+                padding: 0.6rem 1rem; /* Adjust padding */
+            }
+
+            .form-select-lg {
+                width: 100%; /* Ensure select takes full width when stacked */
+                background-position: right 1rem center; /* Adjust arrow position */
+            }
+
+            .search-box {
+                margin-left: 1rem;
+                margin-right: 1rem;
+            }
+
+            .grid-cols-2.md\:grid-cols-4 { /* Target the language grid */
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Auto-fit columns, min width 140px */
+                gap: 0.75rem; /* Slightly reduced gap for more compactness */
+                padding: 0 1rem; /* Add horizontal padding to the grid container */
+            }
+
+            h1 {
+                font-size: 2rem; /* Slightly smaller heading on phones */
+            }
+
+            body {
+                padding: 1rem; /* Reduced overall body padding on phones */
+            }
+        }
+
+        /* Logo styling */
+        #logo {
+            display: block; /* Ensures it takes up its own line */
+            margin: 0 auto 1.5rem; /* Center it and add space below */
+            max-width: 250px; /* Adjust maximum width as needed */
+            height: auto; /* Maintain aspect ratio */
+        }
+    </style>
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+            rel="stylesheet"
+    />
+</head>
+<body class="bg-gray-100"> <button id="toggleDarkMode" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <i id="modeIcon" class="bi bi-moon-fill"></i>
+</button>
+
+<img id="logo" src="/static/thiraiblack.png" alt="ThiraiGUI Logo">
+
+<h1 class="text-3xl font-bold text-center mb-6">Choose a Language</h1>
+
+<div class="search-box">
+    <form action="/search/{{ language }}" method="POST" class="mb-4">
+        <div class="input-group">
+            <select name="selected_language" id="languageSelect" class="form-select-lg" onchange="updateFormAction()">
+                {% set all_languages = ['tamil', 'hindi', 'telugu', 'malayalam', 'kannada', 'bengali', 'marathi', 'punjabi'] %}
+                {% for lang_option in all_languages %}
+                <option value="{{ lang_option }}" {% if language and language == lang_option %}selected{% endif %}>
+                    {{ lang_option|title }}
+                </option>
+                {% endfor %}
+            </select>
+            <input type="text" name="movie_title" class="form-control form-control-lg"
+                   placeholder="Search movies..." value="{{ search if search else '' }}">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-search"></i> Search
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+    {% for lang in languages %}
+    <a href="/language/{{ lang }}" class="block text-center lang-link p-4 rounded shadow capitalize font-semibold">
+        {{ lang }}
+    </a>
+    {% endfor %}
+</div>
+{% if error %}
+<p class="error-text text-center text-red-500 mt-4">{{ error }}</p>
+{% endif %}
+
+<script>
+    const toggleButton = document.getElementById('toggleDarkMode');
+    const body = document.body;
+    const modeIcon = document.getElementById('modeIcon');
+    const logo = document.getElementById('logo'); // Get the logo element
+
+    function updateLogo() {
+        if (body.classList.contains('dark-mode')) {
+            logo.src = "/static/thiraiwhite.png";
+        } else {
+                logo.src = "/static/thiraiblack.png";
+        }
+    }
+
+    function updateIcon() {
+        if (body.classList.contains('dark-mode')) {
+            modeIcon.classList.remove('bi-moon-fill');
+            modeIcon.classList.add('bi-sun-fill');
+        } else {
+            modeIcon.classList.remove('bi-sun-fill');
+            modeIcon.classList.add('bi-moon-fill');
+        }
+    }
+
+    // Load saved preference on page load
+    if (localStorage.getItem('dark-mode') === 'enabled') {
+        body.classList.add('dark-mode');
+    }
+    updateIcon();
+    updateLogo(); // Call updateLogo on page load
+
+    toggleButton.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        const isDarkMode = body.classList.contains('dark-mode');
+        localStorage.setItem('dark-mode', isDarkMode ? 'enabled' : 'disabled');
+        updateIcon();
+        updateLogo(); // Call updateLogo when dark mode is toggled
+    });
+
+    // Function to update the form action based on selected language
+    function updateFormAction() {
+        const selectElement = document.getElementById('languageSelect');
+        const selectedLanguage = selectElement.value;
+        const form = selectElement.closest('form'); // Get the parent form
+        form.action = `/search/${selectedLanguage}`; // Update the form's action URL
+    }
+
+    // Call updateFormAction on page load to ensure initial form action is correct
+    document.addEventListener('DOMContentLoaded', updateFormAction);
+</script>
+</body>
+</html>
