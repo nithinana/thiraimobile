@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/manifest.json">
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -53,7 +53,23 @@
             background-color: black; /* Ensures no background shows through */
         }
 
+        /* Styles for the video element itself */
+        #moviePlayer {
+            /* Initial state: slightly zoomed out */
+            transform: scale(1); /* Default is now middle zoom */
+            transform-origin: center center;
+            transition: transform 0.3s ease-in-out; /* Smooth transition for zoom */
+            position: relative; /* Ensure position is relative for transform */
+            width: 100%; /* Ensure video takes up 100% of its wrapper */
+            height: 100%;
+            object-fit: contain; /* Video scales to fit, letterboxing if needed */
+            display: block;
+            /* Hide native controls */
+            controls: none;
+        }
+
         .video-player-wrapper video {
+            /* These styles are mostly redundant now that #moviePlayer has its own styles */
             width: 100%;
             height: 100%;
             object-fit: cover; /* Video fills the entire screen, cropping if necessary */
@@ -191,7 +207,7 @@
             border-radius: 10px; /* Increased curve */
             transition: width 0.1s linear;
         }
-        
+
         .progress-bar-handle {
             position: absolute;
             top: 50%;
@@ -303,13 +319,15 @@
                 <div class="movie-title-display">{{ movie_title }}</div>
                 {% if video_url %}
                     <a href="{{ video_url }}" download="{{ movie_title | replace(' ', '_') }}.mp4" class="top-button" title="Download Video">
-                        <i class="bi bi-download"></i> 
+                        <i class="bi bi-download"></i>
                     </a>
                 {% else %}
                     <button class="top-button" disabled title="Video not available for download">
-                        <i class="bi bi-download"></i> 
+                        <i class="bi bi-download"></i>
                     </button>
                 {% endif %}
+                <button id="magnificationButton" class="top-button" title="Toggle Magnification">
+                    <i class="bi bi-zoom-in"></i> </button>
             </div>
 
             <div class="center-controls">
@@ -356,6 +374,12 @@
         const videoPlayerWrapper = document.getElementById('videoPlayerWrapper');
         const fullscreenButton = document.getElementById('fullscreenButton');
         const fullscreenIcon = fullscreenButton.querySelector('i');
+
+        // --- NEW: Magnification Elements ---
+        const magnificationButton = document.getElementById('magnificationButton');
+        const magnificationIcon = magnificationButton.querySelector('i');
+        let zoomLevel = 1; // 0: Slightly zoomed out, 1: Full screen, 2: More zoomed in
+        // --- END NEW ---
 
         let isDraggingProgressBar = false;
         let controlsTimeout;
@@ -417,7 +441,7 @@
         videoPlayerWrapper.addEventListener('click', (event) => {
             const currentTime = new Date().getTime();
             const clickedOnControl = event.target.closest('.control-button') || event.target.closest('.top-button') || event.target.closest('.progress-bar-container') || event.target.closest('.movie-title-display');
-            
+
             if (!clickedOnControl && (currentTime - lastTapTime > DOUBLE_TAP_THRESHOLD_MS)) {
                 toggleControls();
             }
@@ -518,7 +542,7 @@
         moviePlayer.addEventListener('loadedmetadata', updateProgressBar);
 
         progressBarContainer.addEventListener('mousedown', (e) => {
-            if (moviePlayer.readyState >= 2) { 
+            if (moviePlayer.readyState >= 2) {
                 isDraggingProgressBar = true;
                 progressBarContainer.classList.add('dragging');
                 updateSeek(e);
@@ -623,11 +647,40 @@
             }
         });
 
+        // --- NEW: Magnification Button Event Listener ---
+        magnificationButton.addEventListener('click', () => {
+            switch (zoomLevel) {
+                case 1:
+                    // Zoom out (smaller)
+                    moviePlayer.style.transform = 'scale(0.9)';
+                    magnificationIcon.classList.remove('bi-zoom-in', 'bi-search');
+                    magnificationIcon.classList.add('bi-zoom-out');
+                    zoomLevel = 0;
+                    break;
+                case 0:
+                    // Zoom in (larger)
+                    moviePlayer.style.transform = 'scale(1.2)';
+                    magnificationIcon.classList.remove('bi-zoom-out');
+                    magnificationIcon.classList.add('bi-search');
+                    zoomLevel = 2;
+                    break;
+                case 2:
+                    // Return to default (normal)
+                    moviePlayer.style.transform = 'scale(1)';
+                    magnificationIcon.classList.remove('bi-search');
+                    magnificationIcon.classList.add('bi-zoom-in');
+                    zoomLevel = 1;
+                    break;
+            }
+            showControls(); // Keep controls visible or reset timer after zoom
+        });
+        // --- END NEW ---
+
         // --- Mobile Tap Functionality Refined ---
         document.addEventListener('touchend', (event) => {
-            const clickedOnControl = event.target.closest('.control-button') || 
-                                     event.target.closest('.top-button') || 
-                                     event.target.closest('.progress-bar-container') || 
+            const clickedOnControl = event.target.closest('.control-button') ||
+                                     event.target.closest('.top-button') ||
+                                     event.target.closest('.progress-bar-container') ||
                                      event.target.closest('.movie-title-display');
 
             if (clickedOnControl) {
