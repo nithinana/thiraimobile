@@ -1,6 +1,6 @@
 # 🎬 ThiraiMobile
 
-**Thirai** is a sleek, mobile-first web app designed for a movie-browsing experience. Built with Python and Flask, it features PWA capabilities.
+**Thirai** is a mobile-compatible web app designed for watching movies. Built with Python and Flask, it features PWA capabilities and scrapes of Einthusan for Tamil, Malayalam, Hindi, Telugu e.c.t
 
 ---
 
