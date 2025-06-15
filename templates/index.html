@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-        <link rel="manifest" href="/static/manifest.json">
+    <link rel="manifest" href="/static/manifest.json">
 
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Thirai">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Thirai">
 
-<link rel="apple-touch-icon" href="/static/ios/icon-192x192.png">
-<link rel="apple-touch-icon" sizes="152x152" href="/static/ios/icon-152x152.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/static/ios/icon-180x180.png">
-<link rel="apple-touch-icon" sizes="167x167" href="/static/ios/icon-167x167.png">
+    <link rel="apple-touch-icon" href="/static/ios/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/static/ios/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/ios/icon-180x180.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/static/ios/icon-167x167.png">
 
-<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" href="/static/splash/launch-750x1334.png">
-<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1242x2208.png">
-<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1125x2436.png">
-<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" href="/static/splash/launch-828x1792.png">
-<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1242x2688.png">
-<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1080x2340.png">
-<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1170x2532.png">
-<link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1284x2778.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" href="/static/splash/launch-750x1334.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1242x2208.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1125x2436.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)" href="/static/splash/launch-828x1792.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1242x2688.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1080x2340.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1170x2532.png">
+    <link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)" href="/static/splash/launch-1284x2778.png">
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Thirai</title>
+    <title>ThiraiGUI</title>
     <link rel="icon" type="image/png" href="/static/favicon.png">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
     <style>
@@ -34,6 +34,8 @@
             padding-left: 2rem;
             padding-right: 2rem;
             padding-bottom: 2rem;
+            /* Initially hide the body to prevent flash before redirect or content display */
+            display: none;
         }
         /* Dark mode overrides - matched to your Bootstrap theme */
         body.dark-mode {
@@ -76,7 +78,7 @@
             color: #ffffff; /* White heading text */
         }
 
-        /* Toggle button */
+        /* Toggle button container for Dark Mode */
         #toggleDarkMode {
             position: fixed;
             top: 1rem;
@@ -94,6 +96,7 @@
             width: 2.5rem;
             height: 2.5rem;
             z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Add a subtle shadow */
         }
         #toggleDarkMode:hover {
             background-color: #555;
@@ -102,6 +105,7 @@
         #modeIcon {
             font-size: 1.25rem;
         }
+
 
         /* Styles for the search bar from the first HTML, adapted for Tailwind CSS context */
         .search-box {
@@ -121,6 +125,16 @@
             border-radius: 0.375rem; /* Matches Tailwind's rounded-md */
             border: 1px solid #ced4da;
             flex-grow: 1; /* Allows input to take up available space */
+        }
+
+        /* New style for highlighted input */
+        .form-control-lg.highlight-red {
+            border-color: #dc3545; /* Red border for highlight */
+            box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25); /* Red glow */
+        }
+        body.dark-mode .form-control-lg.highlight-red {
+            border-color: #dc3545; /* Red border for highlight in dark mode */
+            box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.4); /* Stronger red glow in dark mode */
         }
 
         .btn-primary {
@@ -169,7 +183,7 @@
         }
 
         body.dark-mode .form-select-lg {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23e0e0e0' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"); /* Lighter arrow for dark mode */
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23e0e0e0' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3csvg%3e"); /* Lighter arrow for dark mode */
         }
 
         /* --- Responsive Adjustments for Phones --- */
@@ -197,18 +211,17 @@
                 margin-right: 1rem;
             }
 
-            .grid-cols-2.md\:grid-cols-4 { /* Target the language grid */
-                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Auto-fit columns, min width 140px */
-                gap: 0.75rem; /* Slightly reduced gap for more compactness */
-                padding: 0 1rem; /* Add horizontal padding to the grid container */
-            }
-
             h1 {
                 font-size: 2rem; /* Slightly smaller heading on phones */
             }
 
             body {
                 padding: 1rem; /* Reduced overall body padding on phones */
+            }
+
+            #toggleDarkMode {
+                right: 0.5rem; /* Adjust position for smaller screens */
+                top: 0.5rem;
             }
         }
 
@@ -249,8 +262,24 @@
             href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
             rel="stylesheet"
     />
+    <script>
+        // Auto-redirect if a preferred language exists - moved to HEAD for early execution
+        const preferredLanguage = localStorage.getItem('preferred-language');
+        const currentPath = window.location.pathname;
+
+        // Only redirect if on the root path and a preferred language is set
+        if (preferredLanguage && currentPath === '/') {
+            window.location.replace(`/language/${preferredLanguage}`);
+        } else {
+            // If no redirect, make the body visible
+            document.addEventListener('DOMContentLoaded', () => {
+                document.body.style.display = 'block';
+            });
+        }
+    </script>
 </head>
-<body class="bg-gray-100"> <button id="toggleDarkMode" aria-label="Toggle dark mode" title="Toggle dark mode">
+<body class="bg-gray-100">
+<button id="toggleDarkMode" aria-label="Toggle dark mode" title="Toggle dark mode">
     <i id="modeIcon" class="bi bi-moon-fill"></i>
 </button>
 
@@ -259,7 +288,7 @@
 <h1 class="text-3xl font-bold text-center mb-6">Choose a Language</h1>
 
 <div class="search-box">
-    <form action="/search/{{ language }}" method="POST" class="mb-4">
+    <form action="/search/{{ language }}" method="POST" class="mb-4" id="searchForm">
         <div class="input-group">
             <select name="selected_language" id="languageSelect" class="form-select-lg" onchange="updateFormAction()">
                 {% set all_languages = ['tamil', 'hindi', 'telugu', 'malayalam', 'kannada', 'bengali', 'marathi', 'punjabi'] %}
@@ -269,7 +298,7 @@
                 </option>
                 {% endfor %}
             </select>
-            <input type="text" name="movie_title" class="form-control form-control-lg"
+            <input type="text" name="movie_title" id="movieTitleInput" class="form-control form-control-lg"
                    placeholder="Search movies..." value="{{ search if search else '' }}">
             <button type="submit" class="btn btn-primary btn-lg">
                 <i class="bi bi-search"></i> Search
@@ -280,7 +309,7 @@
 
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
     {% for lang in languages %}
-    <a href="/language/{{ lang }}" class="block text-center lang-link p-4 rounded shadow capitalize font-semibold">
+    <a href="/language/{{ lang }}" class="block text-center lang-link p-4 rounded shadow capitalize font-semibold" data-language="{{ lang }}">
         {{ lang }}
     </a>
     {% endfor %}
@@ -298,20 +327,24 @@
     const toggleButton = document.getElementById('toggleDarkMode');
     const body = document.body;
     const modeIcon = document.getElementById('modeIcon');
-    const logo = document.getElementById('logo'); // Get the logo element
-    const installAppButton = document.getElementById('installAppButton'); // Get the install button element
-    let deferredPrompt; // To store the beforeinstallprompt event
+    const logo = document.getElementById('logo');
+    const installAppButton = document.getElementById('installAppButton');
+    let deferredPrompt;
 
-    function updateLogo() {
-        if (body.classList.contains('dark-mode')) {
+    // --- New elements for search validation ---
+    const searchForm = document.getElementById('searchForm');
+    const movieTitleInput = document.getElementById('movieTitleInput');
+
+    function updateLogo(isDarkMode) {
+        if (isDarkMode) {
             logo.src = "/static/thiraiwhite.png";
         } else {
-                logo.src = "/static/thiraiblack.png";
+            logo.src = "/static/thiraiblack.png";
         }
     }
 
-    function updateIcon() {
-        if (body.classList.contains('dark-mode')) {
+    function updateIcon(isDarkMode) {
+        if (isDarkMode) {
             modeIcon.classList.remove('bi-moon-fill');
             modeIcon.classList.add('bi-sun-fill');
         } else {
@@ -320,31 +353,81 @@
         }
     }
 
-    // Load saved preference on page load
-    if (localStorage.getItem('dark-mode') === 'enabled') {
-        body.classList.add('dark-mode');
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark');
+        } else if (theme === 'light') {
+            body.classList.remove('dark-mode');
+            localStorage.setItem('theme', 'light');
+        } else { // System default
+            localStorage.removeItem('theme'); // Remove stored preference
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                body.classList.add('dark-mode');
+            } else {
+                body.classList.remove('dark-mode');
+            }
+        }
+        updateIcon(body.classList.contains('dark-mode'));
+        updateLogo(body.classList.contains('dark-mode'));
     }
-    updateIcon();
-    updateLogo(); // Call updateLogo on page load
+
+    // Load saved preferences on page load
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        applyTheme(savedTheme);
+    } else {
+        // If no saved theme, apply system default
+        applyTheme('system');
+    }
+
+    // Listen for changes in system dark mode preference
+    if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            // Only re-apply system default if the user hasn't explicitly chosen a theme
+            if (!localStorage.getItem('theme')) {
+                applyTheme('system');
+            }
+        });
+    }
 
     toggleButton.addEventListener('click', () => {
-        body.classList.toggle('dark-mode');
-        const isDarkMode = body.classList.contains('dark-mode');
-        localStorage.setItem('dark-mode', isDarkMode ? 'enabled' : 'disabled');
-        updateIcon();
-        updateLogo(); // Call updateLogo when dark mode is toggled
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') {
+            applyTheme('light');
+        } else {
+            applyTheme('dark');
+        }
     });
 
     // Function to update the form action based on selected language
     function updateFormAction() {
         const selectElement = document.getElementById('languageSelect');
         const selectedLanguage = selectElement.value;
-        const form = selectElement.closest('form'); // Get the parent form
-        form.action = `/search/${selectedLanguage}`; // Update the form's action URL
+        const form = selectElement.closest('form');
+        form.action = `/search/${selectedLanguage}`;
     }
 
     // Call updateFormAction on page load to ensure initial form action is correct
     document.addEventListener('DOMContentLoaded', updateFormAction);
+
+    // --- Search Validation Logic ---
+    searchForm.addEventListener('submit', (e) => {
+        if (movieTitleInput.value.trim() === '') {
+            e.preventDefault(); // Prevent form submission
+            movieTitleInput.classList.add('highlight-red'); // Add red highlight class
+            movieTitleInput.focus(); // Focus on the input field
+        } else {
+            movieTitleInput.classList.remove('highlight-red'); // Remove highlight if text is entered
+        }
+    });
+
+    // Remove highlight when user starts typing
+    movieTitleInput.addEventListener('input', () => {
+        if (movieTitleInput.value.trim() !== '') {
+            movieTitleInput.classList.remove('highlight-red');
+        }
+    });
 
     // --- PWA Installation Logic ---
     if ('serviceWorker' in navigator) {
@@ -360,36 +443,28 @@
     }
 
     window.addEventListener('beforeinstallprompt', (e) => {
-        // Prevent Chrome 67 and earlier from automatically showing the prompt
         e.preventDefault();
-        // Stash the event so it can be triggered later.
         deferredPrompt = e;
-        // Show the install button now that the prompt is available
         installAppButton.style.display = 'block';
         console.log('beforeinstallprompt fired');
     });
 
     installAppButton.addEventListener('click', (e) => {
         if (deferredPrompt) {
-            // Hide the button once clicked
             installAppButton.style.display = 'none';
-            // Show the prompt
             deferredPrompt.prompt();
-            // Wait for the user to respond to the prompt
             deferredPrompt.userChoice.then((choiceResult) => {
                 if (choiceResult.outcome === 'accepted') {
                     console.log('User accepted the A2HS prompt');
                 } else {
                     console.log('User dismissed the A2HS prompt');
                 }
-                deferredPrompt = null; // Clear the deferred prompt
+                deferredPrompt = null;
             });
         }
     });
 
-    // Handle appinstalled event if the user installs it
     window.addEventListener('appinstalled', () => {
-      // Hide the install button if the app is already installed
       installAppButton.style.display = 'none';
       console.log('PWA was installed');
     });
