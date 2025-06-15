@@ -1,6 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+    <!-- embed starts here -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ movie_title if movie_title else 'Thirai' }}</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png"/>
+
+    <!-- Open Graph Tags for Social Media Embeds -->
+    <!-- These tags are dynamically populated by the server-side rendering of watch.html -->
+    <meta property="og:site_name" content="Thirai">
+    <meta property="og:type" content="video.movie">
+    <meta property="og:image" content="https://thirai.onrender.com/static/favicon.png">
+
+    {% if movie_title %}
+    <meta property="og:title" content="{{ movie_title }}">
+    <meta property="og:description" content="Watch {{ movie_title }} on Thirai{% if language %} in {{ language }}{% endif %}">
+    <meta property="og:url" content="https://thirai.onrender.com/watch.html?movie_title={{ movie_title | urlencode }}{% if language %}&language={{ language | urlencode }}{% endif %}">
+    {% else %}
+    <meta property="og:title" content="Thirai">
+    <meta property="og:description" content="Access South-Asian movies online on your device">
+    <meta property="og:url" content="https://thirai.onrender.com/">
+    {% endif %}
+
+    <!-- Twitter Card Tags (Optional, but good practice for Twitter) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@ThiraiApp"> <!-- Replace with your Twitter handle if you have one -->
+    <meta name="twitter:creator" content="@ThiraiApp">
+    {% if movie_title %}
+    <meta name="twitter:title" content="{{ movie_title }}">
+    <meta name="twitter:description" content="Watch {{ movie_title }} on Thirai{% if language %} in {{ language }}{% endif %}">
+    <meta name="twitter:image" content="https://thirai.onrender.com/static/favicon.png">
+    {% else %}
+    <meta name="twitter:title" content="Thirai">
+    <meta name="twitter:description" content="Access South-Asian movies online on your device">
+    <meta name="twitter:image" content="https://thirai.onrender.com/static/favicon.png">
+    {% endif %}
+
+    <!--seperate-->
+    
     <meta name="screen-orientation" content="landscape">
     <link rel="manifest" href="/manifest.json">
 
