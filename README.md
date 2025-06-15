@@ -1,4 +1,8 @@
-# 🎬 ThiraiMobile
+<p align="center">
+  <img src="static/favicon.png" alt="ThiraiMobile Logo" width="100"/>
+</p>
+
+# ThiraiMobile
 
 **Thirai** is a mobile-compatible web app designed for watching movies. Built with Python and Flask, it features PWA capabilities and scrapes of Einthusan for Tamil, Malayalam, Hindi, Telugu e.c.t
 
